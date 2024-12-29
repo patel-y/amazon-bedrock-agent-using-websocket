@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        #chat-container {
+            border: 1px solid #ddd;
+            padding: 16px;
+            height: 400px;
+            overflow-y: scroll;
+        }
+
+        #message-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Chat</h1>
+    <button id="connect">Connect</button>
+    <button id="disconnect">Disconnect</button>
+    <div id="chat-container"></div>
+    <input type="text" id="message-input" placeholder="Enter your message">
+    <button id="send-button">Send</button>
+    <script>
+        let socket;
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const connectButton = document.getElementById('connect');
+        const disconnectButton = document.getElementById('disconnect');
+
+        function appendMessage(message) {
+            const messageElement = document.createElement('p');
+            messageElement.innerText = message;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        sendButton.addEventListener('click', () => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                const message = messageInput.value;
+                socket.send(message);
+                messageInput.value = '';
+                appendMessage('You: ' + message);
+            }
+        });
+
+        connectButton.addEventListener('click', () => {
+            // Replace 'wss://your-websocket-endpoint' with your actual endpoint
+            socket = new WebSocket('<websocket endpoint>');
+            socket.onopen = () => {
+                appendMessage('Connected to WebSocket!');
+            };
+            socket.onmessage = (event) => {
+                appendMessage('Server: ' + event.data);
+            };
+            socket.onclose = () => {
+                appendMessage('Disconnected from WebSocket.');
+            };
+            socket.onerror = (error) => {
+                appendMessage('Error: ' + error.message);
+            };
+        });
+
+        disconnectButton.addEventListener('click', () => {
+            if (socket) {
+                socket.close();
+            }
+        });
+    </script>
+</body>
+</html>

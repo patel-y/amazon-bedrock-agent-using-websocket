@@ -1,0 +1,46 @@
+1. Lambdas:
+    1. Connect
+    2. Disconnect
+    3. sendMessage
+
+2. API gateway:
+    websocket-chat-api
+
+3. DynamodB Table:
+    WebSocketConnections
+        Partition key --> connectionId (String)
+
+4. Bedrock Model Access
+    Amazon Titan
+
+5. IAM Permissions:
+    1. Connect Lambda:
+    amazonDynamoDBFullAccess
+
+    2. Disconnect lambda:
+    amazonDynamoDBFullAccess
+
+    3. SendMessage:
+    AmazonAPIGatewayInvokeFullAccess
+    AmazonBedrockFullAccess
+    amazonDynamoDBFullAccess
+
+    Inline Policy:
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                    "execute-api:ManageConnections"
+                ],
+                "Resource": [
+                    "*"
+                ]
+            }
+        ]
+    }
+
+    Flow:
+    1. Introduction -> 2. Create Lambda -> 3. Bedrock Models -> 3. Create DynamoDB -> 4. Create API Gateway -> Test using html
